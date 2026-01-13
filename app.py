@@ -37,8 +37,33 @@ def receiveImg():
         return {"error": "no file_path"}, 400
 
     return {"status": "received", "path": path}
-    
 
+# simulate video upload
+@app.route("/uploadVid", methods=["POST"])    
+def uploadVid():
+    if "video" not in request.files:
+        return {"error": "no video"}, 400
+
+    video = request.files["video"]
+    filename = secure_filename(video.filename)
+    path = os.path.join(UPLOAD_DIR, filename)
+    video.save(path)
+
+    return jsonify({
+        "status": "uploaded",
+        "path": path
+    })
+
+# receive video
+@app.route("/receiveVid",methods=["POST"])
+def receiveVid():
+    data = request.json
+    path = data.get("video_path")
+
+    if not path:
+        return {"error": "no video_path"}, 400
+
+    return {"status": "received", "path": path}
 
 if __name__ in "__main__":
     app.run(debug=True)
